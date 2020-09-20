@@ -25,7 +25,7 @@ class api extends restful_api {
                 $sql="SELECT * FROM sanpham";
                 $data=$db->FetchAll($sql);
             }    
-            $this->response(200, $data);
+             return $this->response(200, $data);
 		}
 		else if ($this->method == 'POST'){
 			// Hãy viết code xử lý THÊM dữ liệu ở đây
@@ -36,7 +36,7 @@ class api extends restful_api {
             $sql="  INSERT INTO `sanpham` (`idsanpham`, `loaisp`, `tensp`, `mau`, `size`, `thuonghieu`, `giagoc`, `dongia`, `mota`, `hinhanh`) 
                     VALUES ('$obj[idsanpham]', '$obj[loaisp]', '$obj[tensp]', '$obj[mau]', '$obj[size]', '$obj[thuonghieu]', '$obj[giagoc]', '$obj[dongia]', '$obj[mota]', '$obj[hinhanh]') ;";
             $data=$db->ExecuteQuery($sql);
-            $this->response(200, $data);
+            return $this->response(200, $data);
 		}
 		else if ($this->method == 'PUT'){
 			// Hãy viết code xử lý CẬP NHẬT dữ liệu ở đây
@@ -62,7 +62,7 @@ class api extends restful_api {
                          $data=$db->ExecuteMultiQuery($sql);
             }
            
-            $this->response(200, $data);
+            return $this->response(200, $data);
 		}
 	
     }
@@ -85,7 +85,7 @@ class api extends restful_api {
                 $sql="SELECT * FROM loaisp";
                 $data=$db->FetchAll($sql);
             }
-            $this->response(200, $data);
+            return $this->response(200, $data);
 		}
 		else if ($this->method == 'POST'){
 			// Hãy viết code xử lý THÊM dữ liệu ở đây
@@ -96,7 +96,7 @@ class api extends restful_api {
             $sql="  INSERT INTO `loaisp` (`idloai`, `tenloai`)
                     VALUES (NULL, '$obj[tenloai]')";
             $data=$db->ExecuteQuery($sql);
-            $this->response(200, $data);
+            return $this->response(200, $data);
 		}
 		else if ($this->method == 'PUT'){
 			// Hãy viết code xử lý CẬP NHẬT dữ liệu ở đây
@@ -107,14 +107,14 @@ class api extends restful_api {
             if(isset($_GET['delete'])){
                 $sql="UPDATE sanpham SET loaisp=-1 WHERE loaisp=$obj[idloai];DELETE FROM loaisp WHERE idloai=$obj[idloai];";
                 $data=$db->ExecuteMultiQuery($sql);
-                $this->response(200, $data);
+                return $this->response(200, $data);
             }
             else{
             $sql="  UPDATE loaisp
                     SET tenloai='$obj[tenloai]'
                     WHERE idloai=$obj[idloai]";
             $data=$db->ExecuteQuery($sql);
-            $this->response(200, $data);
+            return $this->response(200, $data);
             }
 		}
 		
@@ -132,17 +132,39 @@ class api extends restful_api {
                 $sql="SELECT * FROM  user";
                 $data=$db->FetchAll($sql);
             }
-            $this->response(200, $data);
+            return $this->response(200, $data);
         }
         else if ($this->method == 'POST'){
             $json = file_get_contents('php://input');
             $obj = json_decode($json,true);
-            $date= date("Y/m/d");
-            $password = password_hash($obj['password'], PASSWORD_BCRYPT, array('cost'=>12));
-            $sql="INSERT INTO user (iduser,username,password,phone,address,dob,level)
-                VALUES (NULL,'$obj[username]',$password,'$obj[phone]','$obj[address]',$date,b'0')";
-            $data=$db->ExecuteQuery($sql);
-            $this->response(200, $data);
+            $data=0;
+            if($isset($_GET['login'])){
+               
+                $sql="SELECT * FROM user WHERE username=$obj['username']";
+                if($db->NumRows($sql)){
+                    $user=$db->Fetch($sql);
+                    $hashed_password= $user['password'];
+                    if(password_verify($obj['password'],$hashed_password )){
+                        $data=$db->Fetch($sql);
+                    }
+                }
+                return $this->response(200, $data);
+            }
+            else{
+                $sql="SELECT * FROM user WHERE username=$obj['username']";
+                if($db->NumRows($sql)){
+                    return $this->response(200, $data);
+                }
+                else{
+                    $date= date("Y/m/d");
+                    $password = password_hash($obj['password'], PASSWORD_BCRYPT, array('cost'=>12));
+                    $sql="INSERT INTO user (iduser,username,password,phone,address,dob,level)
+                        VALUES (NULL,'$obj[username]',$password,'$obj[phone]','$obj[address]',$date,b'0')";
+                    $data=$db->ExecuteQuery($sql);
+                    return $this->response(200, $data);
+                }
+            }
+           
         }
         else if ($this->method == 'PUT'){
             $json = file_get_contents('php://input');
@@ -160,7 +182,7 @@ class api extends restful_api {
             }
 
             
-            $this->response(200, $data);
+            return $this->response(200, $data);
         }
     }
 
@@ -179,7 +201,7 @@ class api extends restful_api {
                 $sql="SELECT * FROM hoadon";
                 $data=$db->FetchAll($sql);
             }
-            $this->response(200, $data);
+            return $this->response(200, $data);
         }
         else if($this->method=="POST"){
             $json = file_get_contents('php://input');
@@ -194,7 +216,7 @@ class api extends restful_api {
                         VALUE($LastID,$item[idsanpham],$item[soluong],$item[dongia],$item[soluong]*$item[dongia])";
                 $data=$db->ExecuteQuery($sql);
             }
-            $this->response(200, $data);
+            return $this->response(200, $data);
         }
         else if($this->method=="PUT"){
             $json = file_get_contents('php://input');
@@ -204,7 +226,7 @@ class api extends restful_api {
                         DELETE FROM hoadon WHERE idbill=$obj[idbill]";
                 $data=$db->ExecuteQuery($sql);
             }
-            $this->response(200, $data);
+            return $this->response(200, $data);
         }
     }
 
@@ -214,8 +236,9 @@ class api extends restful_api {
             if(isset($_GET['idbill'])){
                 $sql="SELECT * FROM chitiethoadon WHERE idbill=$_GET[idbill]";
                 $data=$db->FetchAll($sql);
+                return $this->response(200, $data);
             }
-            $this->response(200, $data);
+            
         }
     }
 }

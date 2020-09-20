@@ -32,7 +32,7 @@ if(isset($_POST['update'])){
   if($errors) echo $errors;
 }
 //$getSingle="?idloai=1";
-$getSingle="";
+$getSingle="?idloai=10";
 $get_data=callAPI("GET","http://localhost:8012/api-projekt/api.php/loaisp".$getSingle,false);
 $response=json_decode($get_data,true);
 //get data api
@@ -57,6 +57,10 @@ if($response){
     }
     echo "</table>";
 }
+}
+else{
+    $message="NO DATA FOUND";
+    echo "<script type='text/javascript'>alert('$message');</script>";
 }
 ?>
 
