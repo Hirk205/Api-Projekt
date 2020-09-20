@@ -140,7 +140,7 @@ class api extends restful_api {
             $data=0;
             if($isset($_GET['login'])){
                
-                $sql="SELECT * FROM user WHERE username=$obj['username']";
+                $sql="SELECT * FROM user WHERE username=$obj[username]";
                 if($db->NumRows($sql)){
                     $user=$db->Fetch($sql);
                     $hashed_password= $user['password'];
@@ -151,7 +151,7 @@ class api extends restful_api {
                 return $this->response(200, $data);
             }
             else{
-                $sql="SELECT * FROM user WHERE username=$obj['username']";
+                $sql="SELECT * FROM user WHERE username=$obj[username]";
                 if($db->NumRows($sql)){
                     return $this->response(200, $data);
                 }
