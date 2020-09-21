@@ -21,6 +21,14 @@ class api extends restful_api {
                 $sql="SELECT * FROM sanpham WHERE idsanpham='$_GET[idsanpham]'";
                 $data=$db->Fetch($sql);
             }
+            else if (isset($_GET["page"]) && isset($_GET["counts"])){
+                $page=$_GET["page"];
+                $item_per_page=$_GET["counts"];
+
+                $start= ( $page * $item_per_page ) - $item_per_page;
+                $sql="SELECT * FROM sanpham LIMIT $start,$item_per_page";
+                $data=$db->FetchAll($sql);
+            }
             else{
                 $sql="SELECT * FROM sanpham";
                 $data=$db->FetchAll($sql);
