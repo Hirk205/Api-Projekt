@@ -40,10 +40,31 @@ class api extends restful_api {
             // trả về dữ liệu bằng cách gọi: $this->response(200, $data)
             $json = file_get_contents('php://input');
             $obj = json_decode($json,true);
+            $fileName = $obj['file']['name'];
+            $fileTmpName = $obj['file']['tmp_name'];
+            $fileSize = $obj['file']['size'];
+            $fileType = $obj['file']['type'];
+            $fileExt = explode('.',$fileName);
+            $fileActualExt = strtolower(end($fileExt));
+            $allowed = array('jpg','pnj','jpeg');
+
+            if(in_array($fileActualExt,$allowed)){
+                if($fileSize<1000000){
+                    $fileNameNew = uniqid('',true).".".$fileActualExt;
+                    $fileDestination = 'http://localhost:8012/api-projekt/image/'.$fileNameNew;
+                    move_uploaded_file($fileTmpName,$fileDestination);
+                    $sql="  INSERT INTO `sanpham` (`idsanpham`, `loaisp`, `tensp`, `mau`, `size`, `thuonghieu`, `giagoc`, `dongia`, `mota`, `hinhanh`) 
+                    VALUES ('$obj[idsanpham]', '$obj[loaisp]', '$obj[tensp]', '$obj[mau]', '$obj[size]', '$obj[thuonghieu]', '$obj[giagoc]', '$obj[dongia]', '$obj[mota]',  '$fileDestination') ;";
+                    $db->ExecuteQuery($sql);
+                    $data="INSERT SUCCESS!!!";
+                }
+                else
+                    $data="FILE TOO BIG !!";
+            }
+            else{
+                    $data="ONLY ALLOW IMAGE FILE UPLOAD !!";
+            }
            
-            $sql="  INSERT INTO `sanpham` (`idsanpham`, `loaisp`, `tensp`, `mau`, `size`, `thuonghieu`, `giagoc`, `dongia`, `mota`, `hinhanh`) 
-                    VALUES ('$obj[idsanpham]', '$obj[loaisp]', '$obj[tensp]', '$obj[mau]', '$obj[size]', '$obj[thuonghieu]', '$obj[giagoc]', '$obj[dongia]', '$obj[mota]', '$obj[hinhanh]') ;";
-            $data=$db->ExecuteQuery($sql);
             return $this->response(200, $data);
 		}
 		else if ($this->method == 'PUT'){
