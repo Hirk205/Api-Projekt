@@ -21,6 +21,12 @@ class api extends restful_api {
                 $sql="SELECT * FROM sanpham WHERE idsanpham='$_GET[idsanpham]'";
                 $data=$db->Fetch($sql);
             }
+            else if(isset($_GET["getnumpage"]) && isset($_GET["counts"])){
+                $sql="SELECT * FROM sanpham";
+                $total=$db->NumRows($sql);
+                $item_per_page=$_GET["counts"];
+                $data=ceil($total/$item_per_page);
+            }
             else if (isset($_GET["page"]) && isset($_GET["counts"])){
                 $page=$_GET["page"];
                 $item_per_page=$_GET["counts"];
@@ -233,18 +239,14 @@ class api extends restful_api {
             return $this->response(200, $data);
         }
         else if($this->method=="POST"){
+            $data="Error";
             $json = file_get_contents('php://input');
             $obj = json_decode($json,true);
             date_default_timezone_set('Asia/Ho_Chi_Minh');
             $datetime=date("Y-m-d h:i:sa");
             $sql="INSERT INTO hoadon (idbill,iduser,noigiao,ngaydathang,tongtien)
                     VALUE (NULL,'$obj[iduser]','$obj[noigiao]',$datetime,$obj[tongtien])";
-            $LastID=$db->ExecuteQueryInsert($sql);
-            foreach($obj['sanpham'] as $item){
-                $sql="INSERT INTO chitiethoadon(idbill,idsanpham,soluong,dongia,thanhtien)
-                        VALUE($LastID,$item[idsanpham],$item[soluong],$item[dongia],$item[soluong]*$item[dongia])";
-                $data=$db->ExecuteQuery($sql);
-            }
+            $data=$db->ExecuteQueryInsert($sql);
             return $this->response(200, $data);
         }
         else if($this->method=="PUT"){
@@ -268,6 +270,15 @@ class api extends restful_api {
                 return $this->response(200, $data);
             }
             
+        }
+        else if ($this->method=="POST"){
+            $json = file_get_contents('php://input');
+            $obj = json_decode($json,true);
+            $sql="INSERT INTO chitiethoadon(idbill,idsanpham,soluong,dongia,thanhtien)
+            VALUE($obj[idbill],$item[idsanpham],$item[soluong],$item[dongia],$item[soluong]*$item[dongia])";
+            $db->ExecuteQuery($sql);
+            $data="OK";
+            return $this->response(200, $data);
         }
     }
 }
