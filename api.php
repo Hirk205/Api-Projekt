@@ -18,11 +18,16 @@ class api extends restful_api {
 			// Hãy viết code xử lý LẤY dữ liệu ở đây
             // trả về dữ liệu bằng cách gọi: $this->response(200, $data)
             if(isset($_GET["idsanpham"])){
-                $sql="SELECT * FROM sanpham WHERE idsanpham='$_GET[idsanpham]'";
+               $sql="SELECT a.idsanpham,b.tenloai,a.tensp,a.mau,a.size,a.thuonghieu,a.giagoc,a.dongia,a.mota,a.hinhanh
+                        FROM sanpham a INNER JOIN loaisp b 
+                        WHERE a.loaisp = b.idloai AND a.idsanpham='$_GET[idsanpham]'";
                 $data=$db->Fetch($sql);
             }
             else if(isset($_GET["getnumpage"]) && isset($_GET["counts"])){
-                $sql="SELECT * FROM sanpham";
+                 $sql="SELECT a.idsanpham,b.tenloai,a.tensp,a.mau,a.size,a.thuonghieu,a.giagoc,a.dongia,a.mota,a.hinhanh
+                        FROM sanpham a INNER JOIN loaisp b 
+                        WHERE a.loaisp = b.idloai 
+                        ORDER BY a.idsanpham";
                 $total=$db->NumRows($sql);
                 $item_per_page=$_GET["counts"];
                 $data=ceil($total/$item_per_page);
@@ -32,9 +37,30 @@ class api extends restful_api {
                 $item_per_page=$_GET["counts"];
 
                 $start= ( $page * $item_per_page ) - $item_per_page;
-                $sql="SELECT * FROM sanpham LIMIT $start,$item_per_page";
+                $sql="SELECT a.idsanpham,b.tenloai,a.tensp,a.mau,a.size,a.thuonghieu,a.giagoc,a.dongia,a.mota,a.hinhanh
+                        FROM sanpham a INNER JOIN loaisp b 
+                        WHERE a.loaisp = b.idloai LIMIT $start,$item_per_page";
                 $data=$db->FetchAll($sql);
             }
+			//sort
+		 else if(isset($_GET['sort'])){
+                $sql = "SELECT a.idsanpham,b.tenloai,a.tensp,a.mau,a.size,a.thuonghieu,a.giagoc,a.dongia,a.mota,a.hinhanh
+                        FROM sanpham a INNER JOIN loaisp b 
+                        WHERE a.loaisp = b.idloai";
+                if(isset($_GET['loaisp'])){
+                    $sql .=" AND a.loaisp = '$_GET[loaisp]'";
+                }
+                if(isset($_GET['mau'])){
+                    $sql.=" AND a.mau = '$_GET[mau]'";
+                }
+                if(isset($_GET['size'])){
+                    $sql .= " AND a.size = '$_GET[size]'";
+                }
+                if(isset($_GET['price1']) && isset($_GET['price2'])){
+                    $sql .=" AND a.dongia BETWEEN '$_GET[price1]' AND '$_GET[price2]' ";
+                $data = $db->FetchAll($sql);
+            }
+			
             else{
                 $sql="SELECT * FROM sanpham";
                 $data=$db->FetchAll($sql);
