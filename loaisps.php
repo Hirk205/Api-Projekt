@@ -40,8 +40,10 @@
                                     $sql .="sanpham.". $fields[$i-1] ." ";
                             }
                         }
+                      
                         $sql .="from sanpham  inner join loaisp  where sanpham.loaisp=loaisp.idloai and idloai=$id";
-                        $data=$db->Fetch($sql);
+                        
+                        $data=$db->FetchAll($sql);
                         
                     }
                     else{
@@ -52,7 +54,7 @@
                     $sql="  SELECT a.idsanpham,b.tenloai,a.tensp,a.mau,a.size,a.thuonghieu,a.giagoc,a.dongia,a.mota,a.hinhanh
                             FROM sanpham a INNER JOIN loaisp b 
                             WHERE a.loaisp = b.idloai and idloai=$id";
-                    $data=$db->Fetch($sql);
+                    $data=$db->FetchAll($sql);
                     
                 }
             }
