@@ -10,116 +10,346 @@ class api extends restful_api {
        
 	}
 
-	public function sanpham(){
+	public function sanphams(){
 
         $db=new DataProvider();
 
 		if ($this->method == 'GET'){
 			// Hãy viết code xử lý LẤY dữ liệu ở đây
             // trả về dữ liệu bằng cách gọi: $this->response(200, $data)
-            if(isset($_GET["idsanpham"])){
-                $sql="SELECT * FROM sanpham WHERE idsanpham='$_GET[idsanpham]'";
-                $data=$db->Fetch($sql);
+            $string="";
+            if(isset($_GET['fields']))
+                $string=$_GET['fields'];
+            $fields=explode(',',$string);
+            if(empty($fields[0])){
+                unset($fields);
+                $fields=array();
             }
-            else if(isset($_GET["getnumpage"]) && isset($_GET["counts"])){
-                $sql="SELECT * FROM sanpham";
+            $allowArray=array("idsanpham","tensp","tenloai","loaisp","mau","size","thuonghieu","giagoc","dongia","mota","hinhanh");
+            $count=count($fields);
+            if(isset($_GET['limit'])){
+                $sql="select * from sanpham";
                 $total=$db->NumRows($sql);
-                $item_per_page=$_GET["counts"];
+                $item_per_page=$_GET["limit"];
                 $data=ceil($total/$item_per_page);
-            }
-            else if (isset($_GET["page"]) && isset($_GET["counts"])){
-                $page=$_GET["page"];
-                $item_per_page=$_GET["counts"];
+                if(isset($_GET['page'])){
+                    $page=$_GET["page"];
+                    $start= ( $page * $item_per_page ) - $item_per_page;
+                    $sql="SELECT a.idsanpham,b.tenloai,a.tensp,a.mau,a.size,a.thuonghieu,a.giagoc,a.dongia,a.mota,a.hinhanh
+                    FROM sanpham a INNER JOIN loaisp b 
+                    WHERE a.loaisp = b.idloai LIMIT $start,$item_per_page";
+                    $data=$db->FetchAll($sql);
+                    return $this->response(200, $data);
+                }
 
-                $start= ( $page * $item_per_page ) - $item_per_page;
-                $sql="SELECT * FROM sanpham LIMIT $start,$item_per_page";
+                return $this->response(200, $data);
+            }
+            if(isset($_GET['q'])){
+                $tmp=$_GET['q'];
+                $targets=explode(' ',$tmp);
+                $count=count($targets);
+                $sql='select * from sanpham where ';
+               
+                if($count>1){
+                   
+                    for ($i=1;$i<=$count;$i++){
+                        if($i!=$count){
+                            $sql .='idsanpham="'.$targets[$i-1].'" or tensp="'.$targets[$i-1].'" or ';
+                        }
+                        else{
+                            $sql .='idsanpham="'.$targets[$i-1].'" or tensp="'.$targets[$i-1].'"';
+                        }
+                    }
+                }
+                else{
+                            $sql .='idsanpham="'.$targets[0].'" or tensp="'.$targets[0].'"';
+                    
+                }
+               
                 $data=$db->FetchAll($sql);
+                return $this->response(200, $data);
+            }
+            if(isset($_GET['sort'])){
+                if (($key = array_search('tenloai', $allowArray)) !== false) {
+                    unset($allowArray[$key]);
+                }
+                $string=$_GET['sort'];
+               
+                if($string[0]=='-'){
+                    $string=ltrim($string,'-');
+                    $sql="select * from sanpham order by $string DESC";
+                }
+                else{
+                    $string=ltrim($string,'+');
+                    $sql="select * from sanpham order by $string ASC";
+                }
+                $data=$db->FetchAll($sql);
+                return $this->response(200, $data);
+            }
+           
+            if($this->params){
+                if($this->params[0]=="show-ten-loai"){
+    
+                    if($count>0){
+                        for($i=1; $i<=$count; $i++){
+                            if(!in_array($fields[$i-1],$allowArray))
+                                return $this->response(405, "fields not allow");
+                        }
+                        $sql="select ";
+                        for($i=1; $i<=$count; $i++){
+                           
+                            if($i!=$count){
+                                if($fields[$i-1]=='tenloai')
+                                    $sql .="loaisp.tenloai, ";
+                                else
+                                    $sql .="sanpham.". $fields[$i-1] .", ";
+                            }
+                            else if($i==$count){
+                                if($fields[$i-1]=='tenloai')
+                                    $sql .="loaisp.tenloai ";
+                                else
+                                    $sql .="sanpham.". $fields[$i-1] ." ";
+                            }
+                        }
+                        $sql .="from sanpham  inner join loaisp  where sanpham.loaisp=loaisp.idloai";
+                    }
+                    else{
+                        $sql="select sanpham.idsanpham, sanpham.tensp, loaisp.tenloai, sanpham.mau, sanpham.size, sanpham.thuonghieu, sanpham.giagoc, sanpham.dongia, sanpham.mota, sanpham.hinhanh 
+                                from sanpham  inner join loaisp  where sanpham.loaisp=loaisp.idloai";
+                    }
+                    $data=$db->FetchAll($sql);
+                    return $this->response(200, $data);
+                }
+                else{
+                    $id=$this->params[0];
+                    if($count>0){
+                        if (($key = array_search('tenloai', $allowArray)) !== false) {
+                            unset($allowArray[$key]);
+                        }
+                        for($i=1; $i<=$count; $i++){
+                            if(!in_array($fields[$i-1],$allowArray))
+                                return $this->response(405, "fields not allow");
+                        }
+                        $sql="select ";
+                        for($i=1; $i<=$count; $i++){
+                    
+                            if($i!=$count){
+                                    $sql .="sanpham.". $fields[$i-1] .", ";
+                            }
+                            else if($i==$count){
+                                    $sql .="sanpham.". $fields[$i-1] ." ";
+                            }
+                        }
+                        $sql .="from sanpham  where idsanpham='$id'";
+                    }
+                    else{
+                        $sql="select * from sanpham where idsanpham='$id'";
+                    }
+                    if(count($this->params)>1){
+                        if($this->params[1]=="show-ten-loai"){
+                            if($count>0){
+                                for($i=1; $i<=$count; $i++){
+                                    if(!in_array($fields[$i-1],$allowArray))
+                                        return $this->response(405, "fields not allow");
+                                }
+                                $sql="select ";
+                                for($i=1; $i<=$count; $i++){
+                                
+                                    if($i!=$count){
+                                        if($fields[$i-1]=='tenloai')
+                                            $sql .="loaisp.tenloai, ";
+                                        else
+                                            $sql .="sanpham.". $fields[$i-1] .", ";
+                                    }
+                                    else if($i==$count){
+                                        if($fields[$i-1]=='tenloai')
+                                            $sql .="loaisp.tenloai ";
+                                        else
+                                            $sql .="sanpham.". $fields[$i-1] ." ";
+                                    }
+                                }
+                                $sql .="from sanpham  inner join loaisp  where sanpham.loaisp=loaisp.idloai and sanpham.idsanpham='$id'";
+                            }
+                            else{
+                                $sql="select sanpham.idsanpham, sanpham.tensp, loaisp.tenloai, sanpham.mau, sanpham.size, sanpham.thuonghieu, sanpham.giagoc, sanpham.dongia, sanpham.mota, sanpham.hinhanh 
+                                from sanpham  inner join loaisp  where sanpham.loaisp=loaisp.idloai and sanpham.idsanpham='$id'";
+                            }
+                        }
+                        else{
+                            return $this->response(404, "Not Found");
+                        }
+                    }
+                    $data=$db->Fetch($sql);
+                    return $this->response(200, $data);
+                }
+                
             }
             else{
-                $sql="SELECT * FROM sanpham";
-                $data=$db->FetchAll($sql);
-            }    
-             return $this->response(200, $data);
-		}
+                if($count>0){
+                    if (($key = array_search('tenloai', $allowArray)) !== false) {
+                        unset($allowArray[$key]);
+                    }
+                    for($i=1; $i<=$count; $i++){
+                        if(!in_array($fields[$i-1],$allowArray))
+                            return $this->response(405, "fields not allow");
+                    }
+                    $sql="select ";
+                    for($i=1; $i<=$count; $i++){
+                       
+                        if($i!=$count){
+                            $sql .="sanpham.". $fields[$i-1] .", ";
+                        }
+                        else if($i==$count){
+                            $sql .="sanpham.". $fields[$i-1] ." ";
+                        }
+                    }
+                    $sql .="from sanpham";
+                }
+                else{
+                    $sql="select * from sanpham";
+                }
+                    $data=$db->FetchAll($sql);
+                if(empty($data)){
+                    return $this->response(404, "Not Found");
+                }
+                return $this->response(200, $data);
+            }
+           
+            
+        }
 		else if ($this->method == 'POST'){
 			// Hãy viết code xử lý THÊM dữ liệu ở đây
             // trả về dữ liệu bằng cách gọi: $this->response(200, $data)
+            if($this->params){
+                return $this->response(405, "Method not allow");
+            }
             $json = file_get_contents('php://input');
             $obj = json_decode($json,true);
-            $fileName = $obj['file']['name'];
-            $fileTmpName = $obj['file']['tmp_name'];
-            $fileSize = $obj['file']['size'];
-            $fileType = $obj['file']['type'];
-            $fileExt = explode('.',$fileName);
-            $fileActualExt = strtolower(end($fileExt));
-            $allowed = array('jpg','pnj','jpeg');
-
-            if(in_array($fileActualExt,$allowed)){
-                if($fileSize<1000000){
-                    $fileNameNew = uniqid('',true).".".$fileActualExt;
-                    $fileDestination = 'http://localhost:8012/api-projekt/image/'.$fileNameNew;
-                    move_uploaded_file($fileTmpName,$fileDestination);
-                    $sql="  INSERT INTO `sanpham` (`idsanpham`, `loaisp`, `tensp`, `mau`, `size`, `thuonghieu`, `giagoc`, `dongia`, `mota`, `hinhanh`) 
-                    VALUES ('$obj[idsanpham]', '$obj[loaisp]', '$obj[tensp]', '$obj[mau]', '$obj[size]', '$obj[thuonghieu]', '$obj[giagoc]', '$obj[dongia]', '$obj[mota]',  '$fileDestination') ;";
-                    $db->ExecuteQuery($sql);
-                    $data="INSERT SUCCESS!!!";
-                }
-                else
-                    $data="FILE TOO BIG !!";
-            }
-            else{
-                    $data="ONLY ALLOW IMAGE FILE UPLOAD !!";
-            }
-           
-            return $this->response(200, $data);
+            $sql="  INSERT INTO `sanpham` (`idsanpham`, `loaisp`, `tensp`, `mau`, `size`, `thuonghieu`, `giagoc`, `dongia`, `mota`, `hinhanh`) 
+            VALUES ('$obj[idsanpham]', '$obj[loaisp]', '$obj[tensp]', '$obj[mau]', '$obj[size]', '$obj[thuonghieu]', '$obj[giagoc]', '$obj[dongia]', '$obj[mota]',  '$obj[hinhanh]') ;";
+            $db->ExecuteQuery($sql);
+            return $this->response(200, "Post thanh cong");
 		}
 		else if ($this->method == 'PUT'){
 			// Hãy viết code xử lý CẬP NHẬT dữ liệu ở đây
             // trả về dữ liệu bằng cách gọi: $this->response(200, $data)
             $json = file_get_contents('php://input');
             $obj = json_decode($json,true);
-            if(isset($_GET["delete"])){
-                $sql="UPDATE chitiethoadon SET idsanpham='NONE/Deleted' WHERE idsanpham='$obj[idsanpham]'; DELETE FROM sanpham WHERE idsanpham='$obj[idsanpham]'";
-                $data=$db->ExecuteQuery($sql);
+            if($this->params){
+                $id=$this->params[0];
+                $sql="select * from sanpham where idsanpham='$id'";
+                $check=$db->Fetch($sql);
+                if($check){
+                    $sql="  UPDATE sanpham
+                    SET loaisp='$obj[loaisp]',
+                        tensp='$obj[tensp]',
+                        mau='$obj[mau]',
+                        size='$obj[size]',
+                        thuonghieu='$obj[thuonghieu]',
+                        giagoc=$obj[giagoc],
+                        dongia=$obj[dongia],
+                        mota='$obj[mota]',
+                        hinhanh='$obj[hinhanh]',
+                    WHERE idsanpham='$id'";
+                    $db->ExecuteQuery($sql);
+                    return $this->response(200, "Update thanh cong");
+                }
+                else{
+                    return $this->response(404, "ERROR: id san pham khong ton tai");
+                }
             }
             else{
-                $sql="  UPDATE sanpham
-                        SET loaisp='$obj[loaisp]',
-                            tensp='$obj[tensp]',
-                            mau='$obj[mau]',
-                            size='$obj[size]',
-                            thuonghieu='$obj[thuonghieu]',
-                            giagoc=$obj[giagoc],
-                            dongia=$obj[dongia],
-                            mota='$obj[mota]',
-                            hinhanh='$obj[hinhanh]',
-                        WHERE idsanpham=$obj[idsanpham]";
-                         $data=$db->ExecuteMultiQuery($sql);
+                return $this->response(405, "Method not allow");
             }
            
-            return $this->response(200, $data);
-		}
+           
+        }
+        else if ($this->method == 'DELETE'){
+            if($this->params){
+                $id=$this->params[0];
+                $sql="UPDATE chitiethoadon SET idsanpham='DELETED' WHERE idsanpham='$id';delete from sanpham where idsanpham='$id'";
+                $db->ExecuteMultiQuery($sql);
+                return $this->response(200, "Delete thanh cong");
+            }
+            else{
+                return $this->response(405, "Method not allow");
+            }
+        }
 	
     }
     
-    public function loaisp(){
+    public function loaisps(){
         
         $db=new DataProvider();
 
 		if ($this->method == 'GET'){
 			// Hãy viết code xử lý LẤY dữ liệu ở đây
             // trả về dữ liệu bằng cách gọi: $this->response(200, $data)
-           
+            $string='';
+            if(isset($_GET['fields']))
+                $string=$_GET['fields'];
+            $fields=explode(',',$string);
+            if(empty($fields[0])){
+                unset($fields);
+                $fields=array();
+            }
+            $allowArray=array("idsanpham","tensp","tenloai","idloai","loaisp","mau","size","thuonghieu","giagoc","dongia","mota","hinhanh");
+            $count=count($fields);
             
-            if(isset($_GET["idloai"])){
-                $id=$_GET["idloai"];
-                $sql="SELECT * FROM loaisp WHERE idloai=$id";
-                $data=$db->Fetch($sql);
+            if($this->params){
+                
+                $id=$this->params[0];
+                if(count($this->params)>1){
+                    if($count>0){
+                        if($this->params[1]=='sanphams'){
+                            for($i=1; $i<=$count; $i++){
+                                if(!in_array($fields[$i-1],$allowArray))
+                                    return $this->response(405, "fields not allow");
+                            }
+                            $sql="select ";
+                            for($i=1; $i<=$count; $i++){
+                            
+                                if($i!=$count){
+                                    if($fields[$i-1]=='tenloai' || $fields[$i-1]=='idloai')
+                                        $sql .="loaisp.".$fields[$i-1].", ";
+                                    else
+                                        $sql .="sanpham.". $fields[$i-1] .", ";
+                                }
+                                else if($i==$count){
+                                    if($fields[$i-1]=='tenloai' || $fields[$i-1]=='idloai')
+                                        $sql .="loaisp.".$fields[$i-1]." ";
+                                    else
+                                        $sql .="sanpham.". $fields[$i-1] ." ";
+                                }
+                            }
+                            $sql .="from sanpham  inner join loaisp  where sanpham.loaisp=loaisp.idloai and idloai=$id";
+                            $data=$db->Fetch($sql);
+                            
+                        }
+                        else{
+                            return $this->response(404, "Bad URL");
+                        }
+                    }
+                    else{
+                        $sql="  SELECT a.idsanpham,b.tenloai,a.tensp,a.mau,a.size,a.thuonghieu,a.giagoc,a.dongia,a.mota,a.hinhanh
+                                FROM sanpham a INNER JOIN loaisp b 
+                                WHERE a.loaisp = b.idloai and idloai=$id";
+                        $data=$db->Fetch($sql);
+                        
+                    }
+                }
+                else{
+                    $sql="SELECT * FROM loaisp WHERE idloai=$id";
+                    $data=$db->Fetch($sql);
+                   
+                }
             }
             else{
                 $sql="SELECT * FROM loaisp";
                 $data=$db->FetchAll($sql);
             }
+            if(!$data)
+                return $this->response(404, "Not Found");
             return $this->response(200, $data);
 		}
 		else if ($this->method == 'POST'){

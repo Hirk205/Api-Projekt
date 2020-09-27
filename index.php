@@ -1,80 +1,150 @@
+<html>
+<head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Hướng dẫn sử dụng API quản lý quần áo</title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-<?php
-include_once("call_api.php");
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
 
-if(isset($_POST['insert'])){
-    $data_array =  array(
-        "tenloai"        => $_POST["tenloai"],
-  );
-  $make_call = callAPI('POST', 'http://localhost:8012/api-projekt/api.php/loaisp', json_encode($data_array));
-  $response = json_decode($make_call, true);
-  $errors   = $response['response']['errors'];
-  if($errors) echo $errors;
-}
-if(isset($_POST['delete'])){
-    $data_array =  array(
-        "idloai"         =>$_POST['idloai'],
-        "tenloai"        => $_POST["tenloai"],
-    );
-    $update_plan = callAPI('PUT', 'http://localhost:8012/api-projekt/api.php/loaisp?delete=1', json_encode($data_array));
-    $response = json_decode($update_plan, true);
-    $errors   = $response['response']['errors'];
-    if($errors) echo $errors;
-}
-if(isset($_POST['update'])){
-    $data_array =  array(
-        "idloai"         =>$_POST['idloai'],
-        "tenloai"        => $_POST["tenloai"],
-  );
-  $update_plan = callAPI('PUT', 'http://localhost:8012/api-projekt/api.php/loaisp', json_encode($data_array));
-  $response = json_decode($update_plan, true);
-  $errors   = $response['response']['errors'];
-  if($errors) echo $errors;
-}
-//$getSingle="?idloai=1";
-$getSingle="";
-$get_data=callAPI("GET","http://localhost:8012/api-projekt/api.php/loaisp".$getSingle,false);
-$response=json_decode($get_data,true);
-//get data api
-if($response){
-    if(!empty($getSingle)){
-        echo "<table>";
         
-            echo "<tr>
-                    <td>$response[idloai]</td>
-                    <td>$response[tenloai]</td>
-            </tr>";
-        
-        echo "</table>";
-    }
-    else{
-    echo "<table>";
-    foreach($response as $i){
-        echo "<tr>
-                <td>$i[idloai]</td>
-                <td>$i[tenloai]</td>
-        </tr>";
-    }
-    echo "</table>";
-}
-}
-else{
-    $message="NO DATA FOUND";
-    echo "<script type='text/javascript'>alert('$message');</script>";
-}
-?>
+    </style>
+</head>
 
-<form  method = 'post' action='' enctype="multipart/form-data" id='form'>
-    <label for="fname">id:</label>
-        <input type="text" id="idloai" name="idloai"><br><br>
-    <label for="lname">Product Name:</label>
-        <input type="text" id="tenloai" name="tenloai"><br><br>
-            <input type="submit" value="insert" name="insert">
-            <input type="submit" value="delete" name="delete">
-            <input type="submit" value="update" name="update">
-</form>
-<script>
-    if ( window.history.replaceState ) {
-        window.history.replaceState( null, null, window.location.href );
-    } 
-</script>
+<body>
+    <div>
+        <h1>Xin chào bên Client, đây là hướng dẫn sử dụng API quản lý quần áo</h1>
+        <h2>Mình có tạo một function api_call.php + demo về loại sản phẩm trong file index.php các bạn vô tải về mà dùng :<a target="_blank" rel="noopener noreferrer" href="https://github.com/Hirk205/Api-Projekt.git">Link Git</a></h2>
+        <h3>Đây là một sô url để tương tác với database của API các bạn chỉ cần copy paste vô xài như trong demo là được</h3>
+        <table>
+            <tr>
+                <th>STT</th>
+                <th>Chức năng</th>
+                <th>URL</th>
+                <th>Method</th>
+                <th>Lưu ý</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>gọi,thêm,sửa dữ liệu sản phẩm</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/sanpham</td>
+                <td>GET / POST / PUT</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>gọi môt sản phẩm</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/sanpham?idsanpham=...</td>
+                <td>GET</td>
+                <td>điền id của sản phẩm vào ...</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>lấy số lượng trang được phân chia</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/sanpham?getnumpage=1&&counts=...</td>
+                <td>GET</td>
+                <td>điền số lượng sản phẩm  một trang hiện thị vào ...</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>phân trang </td>
+                <td>https://myapiwork.000webhostapp.com/api.php/sanpham?page=...&&counts=...</td>
+                <td>GET</td>
+                <td>điền phân trang hiện tại và số lượng sản phẩm hiện thị trong một trang lần lượt vào...</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Xóa sản phẩm </td>
+                <td>https://myapiwork.000webhostapp.com/api.php/sanpham?delete=1</td>
+                <td>PUT</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>gọi,thêm,sửa dữ liệu loai sản phẩm</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/loaisp</td>
+                <td>GET / POST / PUT</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>gọi 1 loai sản phẩm</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/loaisp?idloai=...</td>
+                <td>GET</td>
+                <td>điền id loại sản phẩm vào ...</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>xóa loại sản phẩm</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/loaisp?delete=1</td>
+                <td>PUT</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>gọi,thêm,sửa dữ liệu user</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/user</td>
+                <td>GET / POST / PUT</td>
+                <td>lưu ý: khi <b>đăng nhập/đăng ký</b> mà data trả về là 0 thì tài khoản <b>đăng nhập/ đăng ký</b> đó <u>không tồn tại(hoặc sai mật khẩu)/ đã tồn tại vui lòng đăng ký tài khoản khác</u></td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>gọi 1 user</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/user?iduser=...</td>
+                <td>GET</td>
+                <td>điền id user vào ...</td>
+            </tr>
+            <tr>
+                <td>11</td>
+                <td>xóa user</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/user?delete=1</td>
+                <td>PUT</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>12</td>
+                <td>gọi,thêm,sửa dữ liệu hóa đơn</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/hoadon</td>
+                <td>GET / POST / PUT</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>13</td>
+                <td>gọi 1 hóa đơn</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/hoadon?idbill=...</td>
+                <td>GET</td>
+                <td>điền id hóa đơn vào ...</td>
+            </tr>
+            <tr>
+                <td>14</td>
+                <td>xóa hóa đơn</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/hoadon?delete=1</td>
+                <td>PUT</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>15</td>
+                <td>gọi,thêm dữ liệu chi tiết hóa đơn</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/chitiethoadon?idbill=...</td>
+                <td>GET</td>
+                <td>điền id hóa đơn muốn xem chi tiết vào ... </td>
+            </tr>
+            <tr>
+                <td>16</td>
+                <td>thêm dữ liệu chi tiết hóa đơn</td>
+                <td>https://myapiwork.000webhostapp.com/api.php/chitiethoadon</td>
+                <td>POST</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
