@@ -21,19 +21,19 @@ class api extends restful_api {
 
     }
     
-    public function user(){
+    public function users(){
         $db=new DataProvider();
         include_once("users.php");
         
     }
 
-    public function hoadon(){
+    public function hoadons(){
         $db= new DataProvider();
         include_once("hoadons.php");
        
     }
 
-    public function chitiethoadon(){
+    public function chitiethoadons(){
         $db= new DataProvider();
         include_once("chitiethoadons.php");
        

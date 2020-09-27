@@ -15,7 +15,9 @@
         $count=count($fields);
         
         if($this->params){
-            
+            if(!is_numeric($this->params[0])){
+                return $this->response(404, "Bad URL");
+            }
             $id=$this->params[0];
             if(count($this->params)>1){
                 if($count>0){
@@ -111,11 +113,23 @@
             $json = file_get_contents('php://input');
             $obj = json_decode($json,true);
             $id=$this->params[0];
-            $sql="  UPDATE loaisp
-                    SET tenloai='$obj[tenloai]'
-                    WHERE idloai='$id'";
-            $data=$db->ExecuteQuery($sql);
-            return $this->response(200, "Update success");
+            $sql="select * from loaisp where idloai=$id";
+            $check=$db->Fetch($sql);
+            if($check){
+                $sql="  UPDATE loaisp
+                        SET tenloai='$obj[tenloai]'
+                        WHERE idloai='$id'";
+                if($db->ExecuteQuery($sql)){
+                    return $this->response(200, "Update success");
+                }
+                else{
+                    return $this->response(404, "ERROR: Update fail");
+                }
+            }
+            else{
+                return $this->response(404, "ERROR: no id exist");
+            }
+           
         }
         else{
             return $this->response(405, "method not allow");
