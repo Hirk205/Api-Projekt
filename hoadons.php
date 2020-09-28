@@ -57,6 +57,7 @@
             }
             else{
                 if($count>0){
+                    $allowArray=array("idbill","iduser","noigiao","ngaydathang","tongtien");
                     $sql="select ";
                     for ($i=1; $i<=$count;$i++){
                         if(!in_array($fields[$i-1],$allowArray))
@@ -77,8 +78,25 @@
                 return $this->response(200, $data);
             }
         }
-        else{
-            $sql="SELECT * FROM hoadon";
+        else{  if($count>0){
+            $allowArray=array("idbill","iduser","noigiao","ngaydathang","tongtien");
+            $sql="select ";
+            for ($i=1; $i<=$count;$i++){
+                if(!in_array($fields[$i-1],$allowArray))
+                    return $this->response(405, "fields not allow");
+                if($i!=$count){
+                    $sql .=$fields[$i-1].",";
+                }
+                else{
+                    $sql .=$fields[$i-1]." ";
+                }
+            }
+            $sql.="from hoadon where idbill";
+            }
+            else{
+                $sql="SELECT * FROM hoadon";
+            }
+           
             $data=$db->FetchAll($sql);
         }
         return $this->response(200, $data);
@@ -91,8 +109,14 @@
         $datetime=date("Y-m-d h:i:sa");
         $sql="INSERT INTO hoadon (idbill,iduser,noigiao,ngaydathang,tongtien)
                 VALUE (NULL,'$obj[iduser]','$obj[noigiao]','$datetime','$obj[tongtien]')";
-        $data=$db->ExecuteQueryInsert($sql);
-        return $this->response(200, $data);
+        $lastID=$db->ExecuteQueryInsert($sql);
+        foreach($obj["0"] as $i=>$j){
+            $sum=$j['soluong']*$j['dongia'];
+            $sql="INSERT INTO chitiethoadon(idbill,idsanpham,soluong,dongia,thanhtien)
+            VALUE('$lastID','$j[idsanpham]','$j[soluong]','$j[dongia]','$sum')";
+            $db->ExecuteQuery($sql);
+        }
+        return $this->response(200, "OK");
     }
     else if($this->method=="PUT"){
         

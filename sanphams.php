@@ -39,15 +39,15 @@
             
                 for ($i=1;$i<=$count;$i++){
                     if($i!=$count){
-                        $sql .='idsanpham="'.$targets[$i-1].'" or tensp="'.$targets[$i-1].'" or ';
+                        $sql .='idsanpham like "%'.$targets[$i-1].'%" or tensp="%'.$targets[$i-1].'%" or ';
                     }
                     else{
-                        $sql .='idsanpham="'.$targets[$i-1].'" or tensp="'.$targets[$i-1].'"';
+                        $sql .='idsanpham like "%'.$targets[$i-1].'%" or tensp="%'.$targets[$i-1].'%" ';
                     }
                 }
             }
             else{
-                        $sql .='idsanpham="'.$targets[0].'" or tensp="'.$targets[0].'"';
+                        $sql .='idsanpham like "%'.$targets[0].'%" or tensp like "%'.$targets[0].'%"';
                 
             }
         

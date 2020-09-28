@@ -78,7 +78,7 @@
             $sql="SELECT * FROM loaisp";
             if($count>0){
                 $sql="select ";
-                $tmpAllowArray=array('idloai','tenloai');
+                $allowArray=array('idloai','tenloai');
                 for($i=1;$i<=$count;$i++){
                     if(!in_array($fields[$i-1],$allowArray))
                         return $this->response(405, "fields not allow");
@@ -101,7 +101,26 @@
         // Hãy viết code xử lý THÊM dữ liệu ở đây
         // trả về dữ liệu bằng cách gọi: $this->response(200, $data)
         if($this->params){
-            return $this->response(405, "method not allow");
+            $json = file_get_contents('php://input');
+            $obj = json_decode($json,true);
+            $id=$this->params[0];
+            $sql="select * from loaisp where idloai=$id";
+            $check=$db->Fetch($sql);
+            if($check){
+                $sql="  UPDATE loaisp
+                        SET tenloai='$obj[tenloai]'
+                        WHERE idloai='$id'";
+                if($db->ExecuteQuery($sql)){
+                    return $this->response(200, "Update success");
+                }
+                else{
+                    return $this->response(404, "ERROR: Update fail");
+                }
+            }
+            else{
+                return $this->response(404, "ERROR: no id exist");
+            }
+           
         }
         else{
             $json = file_get_contents('php://input');
