@@ -43,6 +43,19 @@
                     $data=$db->FetchAll($sql);
                     return $this->response(200, $data);
                 }
+                else   if($this->params[1]=="delete"){
+                    $sql="select idbill from hoadon inner join user on hoadon.iduser=user.iduser where user.iduser=$id";
+                    $getData=$db->Fetch($sql);
+                    $idbill=$getData['idbill'];
+                    if($idbill){
+                    $sql="  delete from chitiethoadon where idbill=$idbill; 
+                            delete from hoadon where iduser=$id; 
+                            delete from user where iduser=$id";
+                    $db->ExecuteMultiQuery($sql);
+                    return $this->response(200, "Delete success");}
+                    else
+                    return $this->response(404, "Delete fail");
+                }
                 else{
                     return $this->response(405, "URL not allow");
                 }

@@ -1,7 +1,4 @@
-
 <?php
-
-
     if ($this->method == 'GET'){
         // Hãy viết code xử lý LẤY dữ liệu ở đây
         // trả về dữ liệu bằng cách gọi: $this->response(200, $data)
@@ -163,8 +160,37 @@
                             from sanpham  inner join loaisp  where sanpham.loaisp=loaisp.idloai and sanpham.idsanpham='$id'";
                         }
                     }
+                    else  if($this->params[1]=="delete"){
+                        $sql="UPDATE chitiethoadon SET idsanpham='DELETED' WHERE idsanpham='$id';delete from sanpham where idsanpham='$id'";
+                        $db->ExecuteMultiQuery($sql);
+                        return $this->response(200, "Delete success");
+                    }else  if($this->params[1]=="update"){
+                        $json = file_get_contents('php://input');
+                        $obj = json_decode($json,true);
+                        $sql="select * from sanpham where idsanpham='$id'";
+                        $check=$db->Fetch($sql);
+                        if($check){
+                            $sql="  UPDATE sanpham
+                            SET loaisp=$obj[loaisp],
+                                tensp='$obj[tensp]',
+                                mau='$obj[mau]',
+                                size='$obj[size]',
+                                thuonghieu='$obj[thuonghieu]',
+                                giagoc='$obj[giagoc]',
+                                dongia='$obj[dongia]',
+                                mota='$obj[mota]',
+                                hinhanh='$obj[hinhanh]'
+                            WHERE idsanpham='$id'";
+                            if($db->ExecuteQuery($sql)){
+                                return $this->response(200, "Update success");
+                            }
+                            else{
+                                return $this->response(404, "ERROR: Update fail");
+                            }
+                        }
+                    }
                     else{
-                        return $this->response(404, "Not Found");
+                        return $this->response(404, "Method Not Allow");
                     }
                 }
                 $data=$db->Fetch($sql);
@@ -208,11 +234,36 @@
     else if ($this->method == 'POST'){
         // Hãy viết code xử lý THÊM dữ liệu ở đây
         // trả về dữ liệu bằng cách gọi: $this->response(200, $data)
-        if($this->params){
-            return $this->response(405, "Method not allow");
-        }
         $json = file_get_contents('php://input');
         $obj = json_decode($json,true);
+        if($this->params){
+            $id=$this->params[0];
+            $sql="select * from sanpham where idsanpham='$id'";
+            $check=$db->Fetch($sql);
+            if($check){
+                $sql="  UPDATE sanpham
+                SET loaisp=$obj[loaisp],
+                    tensp='$obj[tensp]',
+                    mau='$obj[mau]',
+                    size='$obj[size]',
+                    thuonghieu='$obj[thuonghieu]',
+                    giagoc='$obj[giagoc]',
+                    dongia='$obj[dongia]',
+                    mota='$obj[mota]',
+                    hinhanh='$obj[hinhanh]'
+                WHERE idsanpham='$id'";
+                if($db->ExecuteQuery($sql)){
+                    return $this->response(200, "Update success");
+                }
+                else{
+                    return $this->response(404, "ERROR: Update fail");
+                }
+            }
+            else{
+                return $this->response(404, "ERROR: id san pham khong ton tai");
+            }
+        }
+      
         $sql="  INSERT INTO `sanpham` (`idsanpham`, `loaisp`, `tensp`, `mau`, `size`, `thuonghieu`, `giagoc`, `dongia`, `mota`, `hinhanh`) 
         VALUES ('$obj[idsanpham]', '$obj[loaisp]', '$obj[tensp]', '$obj[mau]', '$obj[size]', '$obj[thuonghieu]', '$obj[giagoc]', '$obj[dongia]', '$obj[mota]',  '$obj[hinhanh]') ;";
         if($db->ExecuteQuery($sql)){
@@ -233,15 +284,15 @@
             $check=$db->Fetch($sql);
             if($check){
                 $sql="  UPDATE sanpham
-                SET loaisp='$obj[loaisp]',
+                SET loaisp=$obj[loaisp],
                     tensp='$obj[tensp]',
                     mau='$obj[mau]',
                     size='$obj[size]',
                     thuonghieu='$obj[thuonghieu]',
-                    giagoc=$obj[giagoc],
-                    dongia=$obj[dongia],
+                    giagoc='$obj[giagoc]',
+                    dongia='$obj[dongia]',
                     mota='$obj[mota]',
-                    hinhanh='$obj[hinhanh]',
+                    hinhanh='$obj[hinhanh]'
                 WHERE idsanpham='$id'";
                 if($db->ExecuteQuery($sql)){
                     return $this->response(200, "Update success");

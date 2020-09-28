@@ -52,7 +52,7 @@
             // Nhân thêm dữ liệu tương ứng theo từng loại method
             switch ($this->method) {
                 case 'POST':
-                    $this->params = $_POST;
+                   
                 break;
 
                 case 'GET':
@@ -73,7 +73,7 @@
             }
         }
 
-        /**
+        /**0
          * Thực hiện xử lý request
          */
         private function _process_api(){        

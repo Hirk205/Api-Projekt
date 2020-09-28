@@ -44,6 +44,13 @@
                     $data=$db->FetchAll($sql);
                     return $this->response(200, $data);
                 }
+                else  if($this->params[1]=="delete"){
+                    $sql="delete from chitiethoadon where idbill=$id; delete from hoadon where idbill=$id";
+                    if($db->ExecuteMultiQuery($sql))
+                        return $this->response(200, "Delete success");
+                    else
+                        return $this->response(404, "Delete fail");
+                }
                 else{
                     return $this->response(405, "URL not allow");
                 }

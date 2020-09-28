@@ -47,16 +47,23 @@
                         
                         $data=$db->FetchAll($sql);
                         
-                    }
+                    }  
                     else{
                         return $this->response(404, "Bad URL");
                     }
                 }
                 else{
-                    $sql="  SELECT a.idsanpham,b.tenloai,a.tensp,a.mau,a.size,a.thuonghieu,a.giagoc,a.dongia,a.mota,a.hinhanh
-                            FROM sanpham a INNER JOIN loaisp b 
-                            WHERE a.loaisp = b.idloai and idloai=$id";
-                    $data=$db->FetchAll($sql);
+                    if($this->params[1]=="delete"){
+                        $sql="UPDATE sanpham SET loaisp=-1 WHERE loaisp=$id;delete from loaisp where idloai=$id";
+                        $db->ExecuteMultiQuery($sql);
+                        return $this->response(200, "Delete thanh cong");
+                    }
+                    else{
+                        $sql="  SELECT a.idsanpham,b.tenloai,a.tensp,a.mau,a.size,a.thuonghieu,a.giagoc,a.dongia,a.mota,a.hinhanh
+                                FROM sanpham a INNER JOIN loaisp b 
+                                WHERE a.loaisp = b.idloai and idloai=$id";
+                        $data=$db->FetchAll($sql);
+                    }
                     
                 }
             }
