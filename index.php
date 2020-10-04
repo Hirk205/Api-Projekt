@@ -22,7 +22,7 @@
             "mota"        => $_POST["mota"],
             "hinhanh"        => $_POST["hinhanh"]
             );
-            $make_call = callAPI('POST', 'https://myapiwork.000webhostapp.com/api.php/sanphams/'.$id, json_encode($data_array));
+            $make_call = callAPI('PUT', 'http://35.219.60.232/api.php/sanphams/'.$id, json_encode($data_array));
         }
         else{
             $fileExt = explode('.',$fileName);
@@ -75,7 +75,7 @@
                     "mota"        => $_POST["mota"],
                     "hinhanh"        => $location
                     );
-                    $make_call = callAPI('POST', 'https://myapiwork.000webhostapp.com/api.php/sanphams/'.$id, json_encode($data_array));
+                    $make_call = callAPI('PUT', 'http://35.219.60.232/api.php/sanphams/'.$id, json_encode($data_array));
                     
                 }
                 
@@ -156,7 +156,7 @@
                   "mota"        => $_POST["mota"],
                   "hinhanh"        => $location
                 );
-                $make_call = callAPI('POST', 'https://myapiwork.000webhostapp.com/api.php/sanphams', json_encode($data_array));
+                $make_call = callAPI('POST', 'http://35.219.60.232/api.php/sanphams', json_encode($data_array));
               
               }
               
@@ -229,7 +229,7 @@
         </thead>
         <tbody>
             <?php
-                 $get_data = callAPI('GET', 'https://myapiwork.000webhostapp.com/api.php/sanphams', false);
+                 $get_data = callAPI('GET', 'http://35.219.60.232/api.php/sanphams', false);
                  $data= json_decode($get_data, true);
                  foreach($data as $item){
                     echo "<tr>";
@@ -271,7 +271,7 @@
                 <label>loai san pham</label>
                 <select name="loaisp" id="loaisp">
                     <?php
-                        $get_data = callAPI('GET', 'https://myapiwork.000webhostapp.com/api.php/loaisps', false);
+                        $get_data = callAPI('GET', 'http://35.219.60.232/api.php/loaisps', false);
                         $data= json_decode($get_data, true);
                         foreach($data as $i){
                             echo "<option value=$i[idloai]>$i[tenloai]</option>";
@@ -330,7 +330,7 @@
                 <label>loai san pham</label>
                 <select name="loaisp" id="loaisp">
                     <?php
-                        $get_data = callAPI('GET', 'https://myapiwork.000webhostapp.com/api.php/loaisps', false);
+                        $get_data = callAPI('GET', 'http://35.219.60.232/api.php/loaisps', false);
                         $data= json_decode($get_data, true);
                         foreach($data as $i){
                             echo "<option value=$i[idloai]>$i[tenloai]</option>";
@@ -409,8 +409,8 @@
         name=div.find('.tensp').text();
         var check = confirm("Are you sure to delete "+ id +" ?");
         if(check==true){
-            fetch('https://myapiwork.000webhostapp.com/api.php/sanphams/' + id +'/delete', {
-                method: 'GET',
+            fetch('http://35.219.60.232/api.php/sanphams/' + id , {
+                method: 'DELETE',
             })
             location.reload();
             alert('delete success')
