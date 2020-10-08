@@ -1,7 +1,7 @@
 <?php
     include_once("call_api.php");
     if(isset($_POST["update-sanpham"])){
-        print_r($_POST);
+       
         $file = $_FILES['file'];
         $fileName = $file['name'];
         $fileTmpName = $file['tmp_name'];
@@ -23,6 +23,7 @@
             "mota"        => $_POST["mota"],
             "hinhanh"        => $_POST["hinhanh"]
             );
+            print_r($data_array);
             $make_call = put('http://35.219.60.232/api.php/sanphams/'.$id, $data_array);
         }
         else{
@@ -76,6 +77,7 @@
                     "mota"        => $_POST["mota"],
                     "hinhanh"        => $location
                     );
+                    print_r($data_array);
                     $make_call = put('http://35.219.60.232/api.php/sanphams/'.$id, $data_array);
                     
                 }
@@ -158,7 +160,7 @@
                   "hinhanh"        => $location
                 );
                 $make_call = post('http://35.219.60.232/api.php/sanphams', $data_array);
-              
+               
               }
               
               // close the FTP stream 
