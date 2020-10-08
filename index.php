@@ -1,6 +1,7 @@
 <?php
     include_once("call_api.php");
     if(isset($_POST["update-sanpham"])){
+        print_r($_POST);
         $file = $_FILES['file'];
         $fileName = $file['name'];
         $fileTmpName = $file['tmp_name'];
@@ -22,7 +23,7 @@
             "mota"        => $_POST["mota"],
             "hinhanh"        => $_POST["hinhanh"]
             );
-            $make_call = callAPI('PUT', 'http://35.219.60.232/api.php/sanphams/'.$id, json_encode($data_array));
+            $make_call = put('http://35.219.60.232/api.php/sanphams/'.$id, $data_array);
         }
         else{
             $fileExt = explode('.',$fileName);
@@ -75,7 +76,7 @@
                     "mota"        => $_POST["mota"],
                     "hinhanh"        => $location
                     );
-                    $make_call = callAPI('PUT', 'http://35.219.60.232/api.php/sanphams/'.$id, json_encode($data_array));
+                    $make_call = put('http://35.219.60.232/api.php/sanphams/'.$id, $data_array);
                     
                 }
                 
@@ -156,7 +157,7 @@
                   "mota"        => $_POST["mota"],
                   "hinhanh"        => $location
                 );
-                $make_call = callAPI('POST', 'http://35.219.60.232/api.php/sanphams', json_encode($data_array));
+                $make_call = post('http://35.219.60.232/api.php/sanphams', $data_array);
               
               }
               
@@ -177,6 +178,11 @@
           echo "<script>alert('error')</script>";
         }
     }
+    if(isset($_POST['delete'])){
+        print_r($_POST);
+        $r=delete('http://35.219.60.232/api.php/sanphams/'.$_POST['idsanpham']);
+        echo $r;
+    }
 
 ?>
 <html>
@@ -192,6 +198,7 @@
         <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script> 
         <script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script> 
         <script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> 
+       
         <script>
             $(document).ready(function() {
                 $('#example').DataTable();
@@ -210,7 +217,9 @@
         
     </head>
     <body>
-    <button class='btn-add btn btn-success' data-toggle='modal' data-target='#addModal'> + Add more sanpham</button>
+        <div>
+            <button class='btn-add btn btn-success' data-toggle='modal' data-target='#addModal'> + Add more sanpham</button>
+        </div>
     <table id="example" class="table table-striped table-bordered" style="width:100%">
         <thead>
             <tr>
@@ -229,23 +238,25 @@
         </thead>
         <tbody>
             <?php
-                 $get_data = callAPI('GET', 'http://35.219.60.232/api.php/sanphams', false);
+                 $get_data = get("http://35.219.60.232/api.php/sanphams");
+                
+                
                  $data= json_decode($get_data, true);
                  foreach($data as $item){
-                    echo "<tr>";
-                    echo "<td class='idsanpham'>$item[idsanpham]</td>";
-                    echo "<td class='loaisp'>$item[loaisp]</td>";
-                    echo "<td class='tensp'>$item[tensp]</td>";
-                    echo "<td class='mau'>$item[mau]</td>";
-                    echo "<td class='size'>$item[size]</td>";
-                    echo "<td class='thuonghieu'>$item[thuonghieu]</td>";
-                    echo "<td class='giagoc'>$item[giagoc]</td>";
-                    echo "<td class='dongia'>$item[dongia]</td>";
-                    echo "<td class='mota'>$item[mota]</td>";
-                    echo "<td ><img src='$item[hinhanh]' class='image' style='width:100px; height:50px' ></td>";
-                    echo "<td><button class='btn-edit btn btn-primary' data-toggle='modal' data-target='#editModal'>EDIT</button>";
-                    echo "<button class='btn-delete btn btn-danger' style='margin-left:10px' >DELETE</button></td>";
-                echo "</tr>";
+                        echo "<tr>";
+                        echo "<td class='idsanpham'>$item[idsanpham]</td>";
+                        echo "<td class='loaisp'>$item[loaisp]</td>";
+                        echo "<td class='tensp'>$item[tensp]</td>";
+                        echo "<td class='mau'>$item[mau]</td>";
+                        echo "<td class='size'>$item[size]</td>";
+                        echo "<td class='thuonghieu'>$item[thuonghieu]</td>";
+                        echo "<td class='giagoc'>$item[giagoc]</td>";
+                        echo "<td class='dongia'>$item[dongia]</td>";
+                        echo "<td class='mota'>$item[mota]</td>";
+                        echo "<td ><img src='$item[hinhanh]' class='image' style='width:100px; height:50px' ></td>";
+                        echo "<td><button class='btn-edit btn btn-primary' data-toggle='modal' data-target='#editModal'>EDIT</button>";
+                        echo "<button class='btn-delete btn btn-danger' style='margin-left:10px' data-toggle='modal' data-target='#deleteModal'>DELETE</button></td>";
+                    echo "</tr>";
                  }
             ?>
         </tbody>
@@ -267,11 +278,11 @@
         <div class="modal-body">
             <form action="" method="post" enctype="multipart/form-data">
                 <label >id san pham:</label>
-                <input type="hidden" id="idsanpham" name="idsanpham" ><br><br>
+                <input type="hidden" class="idsanpham" name="idsanpham" ><br><br>
                 <label>loai san pham</label>
-                <select name="loaisp" id="loaisp">
+                <select name="loaisp" class="loaisp">
                     <?php
-                        $get_data = callAPI('GET', 'http://35.219.60.232/api.php/loaisps', false);
+                        $get_data = file_get_contents('http://35.219.60.232/api.php/loaisps');
                         $data= json_decode($get_data, true);
                         foreach($data as $i){
                             echo "<option value=$i[idloai]>$i[tenloai]</option>";
@@ -279,28 +290,28 @@
                     ?>
                 </select><br><br>
                 <label >ten san pham:</label>
-                <input type="text" id="tensp" name="tensp"><br><br>
+                <input type="text" class="tensp" name="tensp"><br><br>
                 <label >mau:</label>
-                <input type="text" id="mau" name="mau"><br><br>
+                <input type="text" class="mau" name="mau"><br><br>
                 <label >size:</label>
-                <select name="size" id="size">
+                <select name="size" class="size">
                         <option value="S">S</option>
                         <option value="M">M</option>
                         <option value="L">L</option>
                         <option value="XL">XL</option>
                 </select><br><br>
                 <label >thuong hieu:</label>
-                <input type="text" id="thuonghieu" name="thuonghieu"><br><br>
+                <input type="text" class="thuonghieu" name="thuonghieu"><br><br>
                 <label >gia goc :</label>
-                <input type="text" id="giagoc" name="giagoc" onkeypress="return isNumberKey(event)"><br><br>
+                <input type="text" class="giagoc" name="giagoc" onkeypress="return isNumberKey(event)"><br><br>
                 <label >don gia :</label>
-                <input type="text" id="dongia" name="dongia" onkeypress="return isNumberKey(event)"><br><br>
+                <input type="text" class="dongia" name="dongia" onkeypress="return isNumberKey(event)"><br><br>
                 <label >mo ta :</label>
-                <input type="text" id="mota" name="mota"><br><br>
+                <input type="text" class="mota" name="mota"><br><br>
                 <label >hinh anh :</label>
-                <input type="hidden" id="hinhanh" name="hinhanh"><br><br>
-                <img src='' id='image' alt='cloth-image' style=' display:block;width:100px; height:50px'>
-                <input type="file" id="file" name="file"><br><br>
+                <input type="hidden" class="hinhanh" name="hinhanh"><br><br>
+                <img src='' class='image' alt='cloth-image' style=' display:block;width:100px; height:50px'>
+                <input type="file" class="file" name="file"><br><br>
                 <div class="modal-footer" align="center" style="margin-top:20px">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <input type='submit'  name='update-sanpham' class='btn-save btn btn-primary' value='save' />
@@ -326,11 +337,11 @@
         <div class="modal-body">
             <form action="" method="post" enctype="multipart/form-data">
                 <label >id san pham:</label>
-                <input type="text" id="idsanpham" name="idsanpham" ><br><br>
+                <input type="text" class="idsanpham" name="idsanpham" ><br><br>
                 <label>loai san pham</label>
-                <select name="loaisp" id="loaisp">
-                    <?php
-                        $get_data = callAPI('GET', 'http://35.219.60.232/api.php/loaisps', false);
+                <select name="loaisp" class="loaisp">
+                    <?php 
+                        $get_data=file_get_contents('http://35.219.60.232/api.php/loaisps');
                         $data= json_decode($get_data, true);
                         foreach($data as $i){
                             echo "<option value=$i[idloai]>$i[tenloai]</option>";
@@ -338,26 +349,26 @@
                     ?>
                 </select><br><br>
                 <label >ten san pham:</label>
-                <input type="text" id="tensp" name="tensp"><br><br>
+                <input type="text" class="tensp" name="tensp"><br><br>
                 <label >mau:</label>
-                <input type="text" id="mau" name="mau"><br><br>
+                <input type="text" class="mau" name="mau"><br><br>
                 <label >size:</label>
-                <select name="size" id="size">
+                <select name="size" class="size">
                         <option value="S">S</option>
                         <option value="M">M</option>
                         <option value="L">L</option>
                         <option value="XL">XL</option>
                 </select><br><br>
                 <label >thuong hieu:</label>
-                <input type="text" id="thuonghieu" name="thuonghieu"><br><br>
+                <input type="text" class="thuonghieu" name="thuonghieu"><br><br>
                 <label >gia goc :</label>
-                <input type="text" id="giagoc" name="giagoc" onkeypress="return isNumberKey(event)"><br><br>
+                <input type="text" class="giagoc" name="giagoc" onkeypress="return isNumberKey(event)"><br><br>
                 <label >don gia :</label>
-                <input type="text" id="dongia" name="dongia" onkeypress="return isNumberKey(event)"><br><br>
+                <input type="text" class="dongia" name="dongia" onkeypress="return isNumberKey(event)"><br><br>
                 <label >mo ta :</label>
-                <input type="text" id="mota" name="mota"><br><br>
+                <input type="text" class="mota" name="mota"><br><br>
                 <label >hinh anh :</label>
-                <input type="file" id="file" name="file"><br><br>
+                <input type="file" class="file" name="file"><br><br>
                 <div class="modal-footer" align="center" style="margin-top:20px">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <input type='submit'  name='Submit' class='btn-save btn btn-primary' value='Submit' />
@@ -369,6 +380,36 @@
       </div>
     </div>
   </div>
+  <div class="modal" id="deleteModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Delete</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+        <form action="" method="POST" enctype="multipart/form-data">
+            <label >id san pham:</label>
+            <input type="text" class="idsanpham" name="idsanpham" ><br><br>
+            <label >ten san pham:</label>
+            <input type="text" class="tensp" name="tensp"><br><br>
+            
+            <div class="modal-footer" align="center" style="margin-top:20px">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type='submit'  name='delete' class='btn btn btn-danger' value='Delete' />
+            </div>
+        </form>
+        </div>
+        
+        
+      </div>
+    </div>
+  </div>
+  
 </html>
 
 <script>
@@ -390,31 +431,26 @@
         imgFullURL = $('img.image')[0].src;
         image=div.find('.hinhanh').attr('src');
         
-        $('#idsanpham').val(id);
-        $('#tensp').val(name);
-        $('#loaisp').val(type);
-        $('#mau').val(color);
-        $('#size option[value='+size+']').attr('selected','selected');
-        $('#thuonghieu').val(thuonghieu);
-        $('#giagoc').val(giagoc);
-        $('#dongia').val(dongia);
-        $('#mota').val(mota);
-        $('#hinhanh').val(imgFullURL);
-        $('#image').attr('src',image);
+        $('.idsanpham').val(id);
+        $('.tensp').val(name);
+        $('.loaisp').val(type);
+        $('.mau').val(color);
+        $('.size option[value='+size+']').attr('selected','selected');
+        $('.thuonghieu').val(thuonghieu);
+        $('.giagoc').val(giagoc);
+        $('.dongia').val(dongia);
+        $('.mota').val(mota);
+        $('.hinhanh').val(imgFullURL);
+        $('.image').attr('src',image);
 
     })
     $('.btn-delete').on('click',function(){
         let div = $(this).parent().parent();
         id=div.find('.idsanpham').text();
         name=div.find('.tensp').text();
-        var check = confirm("Are you sure to delete "+ id +" ?");
-        if(check==true){
-            fetch('http://35.219.60.232/api.php/sanphams/' + id , {
-                method: 'DELETE',
-            })
-            location.reload();
-            alert('delete success')
-        }
+
+        $('.idsanpham').val(id);
+        $('.tensp').val(name);
     })
 </script>
 <script>

@@ -1,33 +1,58 @@
 <?php
-    function callAPI($method, $url, $data){
-        $curl = curl_init();
-        switch ($method){
-           case "POST":
-              curl_setopt($curl, CURLOPT_POST, 1);
-              if ($data)
-                 curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-              break;
-           case "PUT":
-              curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-              if ($data)
-                 curl_setopt($curl, CURLOPT_POSTFIELDS, $data);			 					
-              break;
-           default:
-              if ($data)
-                 $url = sprintf("%s?%s", $url, http_build_query($data));
-        }
-        // OPTIONS:
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-           'APIKEY: 111111111111111111111',
-           'Content-Type: application/json',
-        ));
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        // EXECUTE:
-        $result = curl_exec($curl);
-        if(!$result){die("Connection Failure");}
-        curl_close($curl);
-        return $result;
-     }
+function get($url){
+   $data=file_get_contents($url);
+   return $data;
+}
+
+function post($url,$postData){
+   $ch = curl_init();
+   $headers = array(
+      'Content-Type: application/json'
+   );
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+   curl_setopt($ch, CURLOPT_VERBOSE, 1);
+   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+   curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+   curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+   curl_setopt($ch, CURLOPT_URL, $url);
+   $result = curl_exec($ch);
+   $ch_error = curl_error($ch);
+
+   if ($ch_error) {
+
+      echo"ERROR";
+      curl_close($ch);
+
+   } else {
+      curl_close($ch);
+      return $result;
+   }
+   
+}
+function put($url,$putData){
+
+   $ch = curl_init();
+   curl_setopt($ch, CURLOPT_URL,$url);
+   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+   curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($putData));
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+   
+   $result = curl_exec($ch);
+   curl_close($ch);
+   
+   return $result;
+}
+
+function delete($url){
+   $ch = curl_init();
+   curl_setopt($ch, CURLOPT_URL,$url);
+   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+   $result = curl_exec($ch);
+   $result = json_decode($result);
+   curl_close($ch);
+   return $result;
+}
+
 ?>
