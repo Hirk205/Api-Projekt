@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "festive-flame-291413",
+  "private_key_id": "1ba1f3867fdfa59be4a64de1371e5f8c57c31fd6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC83H6uMMtDn+RD\nxvGjQh7MknwpdYrCy7blZcyktp8zYckwAyZrz4wlf+pZDN6L+1qHKY8kkZ/wepsQ\nEQTp4PIUkzkhae8QenU+2ObqUDrhqNQk10g6rU0mdkSbSkQBJ0YCphLtyAYcJmRy\nLZMa0Tox7iyD/EuYX4c2PiprSa32DmCK452hEz/4mdA1XOehMu0R2lop+EjiyN+D\no58MaaPPc7v43lEUpniRuTyKx3px5YDHS89qsMQQoytle7T2+Rm+aZGuFPK+oskl\nJOLAZsHs8HjFk+0HpcBM/keTRJPvAx0NekN3RF0S5cV8TR+dPe7LDTdJ4nbkbW7V\n5iMYCuKTAgMBAAECggEASsIlSyJ5c31ZSBL6F5vWwTfC+k5S7STicw/G3/SCND6i\n+uRkUwzG9xkZVMKpXVPT0+j5hoo2e2Ss+MEj5shqSwaz+KwMO8OdoZEOZvX3ONgx\nkZu+Navf/DeYlLfjD2nSZr4ChClHceEopaGwt07W8GjNKjm2WsyFo00cUXfK6ri7\noH1lP3DoZcwDGBa0TiWs+O7RLsU8hnhU4z/P54k0oAUKidXQIA3uLrsgwIByUA1c\n/C9V7MrMvGj1TLBj+abBreVPKrZ0wNWP/ENXjnxA6/NDAWL6hB2LrpAS4IAcZnZw\nTTGTjSJ8AohPbzaKOsZb9MEXh+NayweSn8pjCxvqwQKBgQDtC7Mm0NXW0yrsFMWp\n8u6bNLxf9BsUSvS6LarsNfMV9rg7L6/yz7jCG54aZNZmqYBpBcYCHEta1sJ++UPa\nZU1+Vs2TVpZRFksxwW+flV8/jaUI8kR28QDCQB9oCKwQn1SFefZitlH6uxOX5vS8\ntGWdccqPvbJzXODZevrzeWAtYwKBgQDL9nczpHaRmUgKjY6cvgRDqtS8FaFpSr/2\nP8LdwD+vfCcPgqjkTM2FO37x9KsBWBktNrvMrGSlXtjIJ9/Su7ijvytySuMJFT5/\nltTw45XuuQOldl9FY1vpJf9TRQPy2vkHrqdgUoWL9PpwxUPs35Anjk0htLKQG4xe\npv4GpvJVEQKBgQCJIWCVjvB2I5lME8Q5ydDhNsPXGqdjuO0Um4Cqv5cN2LnBe5fk\n9ugiWsm+6SDjKSGhH/bpl6a8OUsxG1B2km4fLWYl20yAQk5jzUye3FHKuU2E/GpB\nCLDwrxm8HHA1+YZy5Rh1CJYqX3k5QiHI3O+AAqk1OH94n31wMuXkXg4WkwKBgDCh\ngWZ0zjiE/aJWgixpOgcQUkzOM4AxbHfAWCwbTJQA3CdclfxpO4+K0gfKuINHiCk5\npal1aUHszW9b4ogSbkHMsQU9Sci+ofo18mvFN9iFkJMBGFIpEJ8Uij5GdFyRTVNB\nl3Ll+iWWsaf1wO5Xl712tnlU5kZp6xweYO8hGyKhAoGBALrSfBKL75XMKhUg9kx0\nyowVLPqim4KhShKrmTPqSdJb6Jx9ZQ9vpsQg61xE+nQ2x27VkzIvJsF2yBy/o7yx\nGGYqndIKdpgC3G6WBtZXtlNu6w2U92ktv+PJY3PPdIgspv32HGQli2Yz6pA1vXi5\nkorJX7si6dn5bVihGHJqsfQE\n-----END PRIVATE KEY-----\n",
+  "client_email": "storage-upload@festive-flame-291413.iam.gserviceaccount.com",
+  "client_id": "115252792146165496293",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/storage-upload%40festive-flame-291413.iam.gserviceaccount.com"
+}
